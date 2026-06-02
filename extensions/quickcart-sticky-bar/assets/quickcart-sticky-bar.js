@@ -158,8 +158,9 @@
       })
       .then(function () {
         button.textContent = settings.addedText || "Added!";
-        document.dispatchEvent(new CustomEvent("cart:refresh"));
-        document.dispatchEvent(new CustomEvent("quickcart:added"));
+        return refreshCartUi();
+      })
+      .then(function () {
         setTimeout(function () {
           build();
           updateVisibility();
@@ -169,6 +170,77 @@
         button.textContent = settings.buttonText || "Add to cart";
         button.disabled = false;
       });
+  }
+
+  function cartUrl(path) {
+    var root = window.Shopify && Shopify.routes ? Shopify.routes.root : "/";
+    return root + path.replace(/^\//, "");
+  }
+
+  function refreshCartUi() {
+    return fetch(cartUrl("/cart.js"), {
+      headers: {
+        Accept: "application/json"
+      }
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Unable to refresh cart");
+        }
+        return response.json();
+      })
+      .then(function (cart) {
+        updateCartCount(cart.item_count || 0);
+        dispatchCartEvents(cart);
+      })
+      .catch(function () {
+        dispatchCartEvents();
+      });
+  }
+
+  function updateCartCount(itemCount) {
+    var selectors = [
+      "#cart-icon-bubble .cart-count-bubble span",
+      "#cart-icon-bubble [aria-hidden='true']",
+      ".cart-count-bubble span",
+      "[data-cart-count]",
+      "[data-header-cart-count]",
+      ".cart-count"
+    ];
+
+    selectors.forEach(function (selector) {
+      document.querySelectorAll(selector).forEach(function (element) {
+        element.textContent = String(itemCount);
+        element.setAttribute("data-cart-count", String(itemCount));
+      });
+    });
+
+    document.querySelectorAll("#cart-icon-bubble, .header__icon--cart").forEach(function (element) {
+      element.setAttribute("aria-label", "Cart, " + itemCount + " items");
+    });
+  }
+
+  function dispatchCartEvents(cart) {
+    var detail = cart ? { cart: cart } : {};
+    var events = [
+      "cart:refresh",
+      "cart:updated",
+      "cart:update",
+      "cart:change",
+      "theme:cart:change",
+      "quickcart:added"
+    ];
+
+    events.forEach(function (eventName) {
+      document.dispatchEvent(new CustomEvent(eventName, {
+        bubbles: true,
+        detail: detail
+      }));
+    });
+
+    if (window.Shopify && Shopify.designMode) {
+      window.dispatchEvent(new CustomEvent("resize"));
+    }
   }
 
   function shouldShow() {
