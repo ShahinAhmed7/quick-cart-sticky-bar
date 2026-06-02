@@ -281,15 +281,12 @@
 
   function getCartSectionIds() {
     var ids = [];
+    var headerSections = document.querySelectorAll(
+      ".shopify-section[id*='header'], #shopify-section-header"
+    );
 
-    getCartLinks().forEach(function (cartLink) {
-      var section = cartLink.closest(".shopify-section[id]");
-
-      if (!section || !section.id || section.id.indexOf("shopify-section-") !== 0) {
-        section = document.querySelector(".shopify-section[id*='header']");
-      }
-
-      if (!section || !section.id) {
+    headerSections.forEach(function (section) {
+      if (!section.id || section.id.indexOf("shopify-section-") !== 0) {
         return;
       }
 
