@@ -172,6 +172,10 @@
   }
 
   function shouldShow() {
+    if (window.Shopify && Shopify.designMode) {
+      return true;
+    }
+
     var triggerOffset = Number(mount.dataset.triggerOffset || 260);
     var productButton = document.querySelector('form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] [name="add"]');
     var hasScrolledPastOffset = window.scrollY > triggerOffset;
