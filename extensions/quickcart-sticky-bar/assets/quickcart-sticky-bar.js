@@ -224,28 +224,13 @@
     });
 
     getCartLinks().forEach(function (cartLink) {
-      var bubble = cartLink.querySelector(".quickcart-cart-count-bubble");
-
-      if (!bubble) {
-        bubble = document.createElement("span");
-        bubble.className = "quickcart-cart-count-bubble";
-        bubble.setAttribute("aria-hidden", "true");
-        cartLink.appendChild(bubble);
-      }
-
-      if (getComputedStyle(cartLink).position === "static") {
-        cartLink.style.position = "relative";
-      }
-
-      bubble.hidden = itemCount < 1;
-      bubble.textContent = String(itemCount);
       cartLink.setAttribute("aria-label", "Cart, " + itemCount + " items");
     });
   }
 
   function getInitialCartCount() {
     var countElement = document.querySelector(
-      ".quickcart-cart-count-bubble, .cart-count-bubble span, [data-cart-count], [data-header-cart-count], .cart-count"
+      ".cart-count-bubble span, [data-cart-count], [data-header-cart-count], .cart-count"
     );
     var count = countElement ? Number(countElement.textContent.trim()) : 0;
 
