@@ -174,13 +174,14 @@
   function shouldShow() {
     var triggerOffset = Number(mount.dataset.triggerOffset || 260);
     var productButton = document.querySelector('form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] [name="add"]');
+    var hasScrolledPastOffset = window.scrollY > triggerOffset;
 
     if (productButton) {
       var rect = productButton.getBoundingClientRect();
-      return rect.bottom < 0 || rect.top > window.innerHeight;
+      return hasScrolledPastOffset || rect.bottom < 0 || rect.top > window.innerHeight;
     }
 
-    return window.scrollY > triggerOffset;
+    return hasScrolledPastOffset;
   }
 
   function updateVisibility() {
