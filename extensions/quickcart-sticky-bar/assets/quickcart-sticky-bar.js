@@ -201,7 +201,6 @@
   function updateCartCount(itemCount) {
     var selectors = [
       "#cart-icon-bubble .cart-count-bubble span",
-      "#cart-icon-bubble [aria-hidden='true']",
       ".cart-count-bubble span",
       "[data-cart-count]",
       "[data-header-cart-count]",
@@ -210,12 +209,43 @@
 
     selectors.forEach(function (selector) {
       document.querySelectorAll(selector).forEach(function (element) {
+        if (element.closest("svg")) {
+          return;
+        }
+
         element.textContent = String(itemCount);
         element.setAttribute("data-cart-count", String(itemCount));
       });
     });
 
-    document.querySelectorAll("#cart-icon-bubble, .header__icon--cart").forEach(function (element) {
+    document.querySelectorAll("#cart-icon-bubble").forEach(function (cartIcon) {
+      var bubble = cartIcon.querySelector(".cart-count-bubble");
+
+      if (itemCount > 0 && !bubble) {
+        bubble = document.createElement("div");
+        bubble.className = "cart-count-bubble";
+        bubble.innerHTML = '<span aria-hidden="true"></span><span class="visually-hidden"></span>';
+        cartIcon.appendChild(bubble);
+      }
+
+      if (bubble) {
+        bubble.hidden = itemCount < 1;
+        var visibleCount = bubble.querySelector('span[aria-hidden="true"]');
+        var accessibleCount = bubble.querySelector(".visually-hidden");
+
+        if (visibleCount) {
+          visibleCount.textContent = String(itemCount);
+        }
+
+        if (accessibleCount) {
+          accessibleCount.textContent = itemCount + " items";
+        }
+      }
+
+      cartIcon.setAttribute("aria-label", "Cart, " + itemCount + " items");
+    });
+
+    document.querySelectorAll(".header__icon--cart").forEach(function (element) {
       element.setAttribute("aria-label", "Cart, " + itemCount + " items");
     });
   }
