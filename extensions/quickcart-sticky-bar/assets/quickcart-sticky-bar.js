@@ -195,6 +195,7 @@
         lastKnownCartCount = cart.item_count || 0;
         updateCartCount(lastKnownCartCount);
         dispatchCartEvents(cart);
+        return refreshHeaderSections();
       })
       .catch(function () {
         dispatchCartEvents();
@@ -235,6 +236,79 @@
     var count = countElement ? Number(countElement.textContent.trim()) : 0;
 
     return Number.isFinite(count) ? count : 0;
+  }
+
+  function refreshHeaderSections() {
+    var sectionIds = getCartSectionIds();
+
+    if (!sectionIds.length) {
+      return Promise.resolve();
+    }
+
+    return fetch(cartUrl("/?sections=" + sectionIds.join(",")), {
+      headers: {
+        Accept: "application/json"
+      }
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Unable to refresh header sections");
+        }
+        return response.json();
+      })
+      .then(function (sections) {
+        sectionIds.forEach(function (sectionId) {
+          var sectionHtml = sections[sectionId];
+          var target = document.getElementById("shopify-section-" + sectionId);
+
+          if (!sectionHtml || !target) {
+            return;
+          }
+
+          var wrapper = document.createElement("div");
+          wrapper.innerHTML = sectionHtml;
+          var freshSection = wrapper.querySelector("#shopify-section-" + escapeSelector(sectionId));
+
+          target.innerHTML = freshSection ? freshSection.innerHTML : sectionHtml;
+        });
+
+        updateCartCount(lastKnownCartCount);
+      })
+      .catch(function () {
+        updateCartCount(lastKnownCartCount);
+      });
+  }
+
+  function getCartSectionIds() {
+    var ids = [];
+
+    getCartLinks().forEach(function (cartLink) {
+      var section = cartLink.closest(".shopify-section[id]");
+
+      if (!section || !section.id || section.id.indexOf("shopify-section-") !== 0) {
+        section = document.querySelector(".shopify-section[id*='header']");
+      }
+
+      if (!section || !section.id) {
+        return;
+      }
+
+      var sectionId = section.id.replace(/^shopify-section-/, "");
+
+      if (sectionId && ids.indexOf(sectionId) === -1) {
+        ids.push(sectionId);
+      }
+    });
+
+    return ids;
+  }
+
+  function escapeSelector(value) {
+    if (window.CSS && CSS.escape) {
+      return CSS.escape(value);
+    }
+
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, "\\$&");
   }
 
   function dispatchCartEvents(cart) {
