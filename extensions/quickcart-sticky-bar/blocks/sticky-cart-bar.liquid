@@ -1,0 +1,161 @@
+{% comment %} QuickCart Sticky Bar - App Embed {% endcomment %}
+{% if product %}
+  <div
+    id="quickcart-sticky-bar"
+    data-product-id="{{ product.id }}"
+    data-product-title="{{ product.title | escape }}"
+    data-product-url="{{ product.url }}"
+    data-show-image="{{ block.settings.show_image }}"
+    data-show-price="{{ block.settings.show_price }}"
+    data-show-quantity="{{ block.settings.show_quantity }}"
+    data-show-variants="{{ block.settings.show_variants }}"
+    data-mobile-only="{{ block.settings.mobile_only }}"
+    data-trigger-offset="{{ block.settings.trigger_offset }}"
+    hidden
+  ></div>
+
+  <script type="application/json" id="quickcart-product-data">
+    {
+      "title": {{ product.title | json }},
+      "url": {{ product.url | json }},
+      "featuredImage": {{ product.featured_image | image_url: width: 160 | json }},
+      "moneyFormat": {{ shop.money_format | json }},
+      "selectedVariantId": {{ product.selected_or_first_available_variant.id | json }},
+      "variants": [
+        {% for variant in product.variants %}
+          {
+            "id": {{ variant.id | json }},
+            "title": {{ variant.title | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | json }},
+            "compareAtPrice": {{ variant.compare_at_price | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    }
+  </script>
+
+  <script>
+    window.quickCartStickyBarSettings = {
+      buttonText: {{ block.settings.button_text | json }},
+      addingText: {{ block.settings.adding_text | json }},
+      addedText: {{ block.settings.added_text | json }},
+      soldOutText: {{ block.settings.sold_out_text | json }},
+      backgroundColor: {{ block.settings.background_color | json }},
+      textColor: {{ block.settings.text_color | json }},
+      buttonColor: {{ block.settings.button_color | json }},
+      buttonTextColor: {{ block.settings.button_text_color | json }},
+      position: {{ block.settings.position | json }}
+    };
+  </script>
+
+  {{ 'quickcart-sticky-bar.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'quickcart-sticky-bar.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "QuickCart Sticky Bar",
+  "target": "body",
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "adding_text",
+      "label": "Adding text",
+      "default": "Adding..."
+    },
+    {
+      "type": "text",
+      "id": "added_text",
+      "label": "Added text",
+      "default": "Added!"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_text",
+      "label": "Sold out text",
+      "default": "Sold out"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "default": "bottom",
+      "options": [
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "top", "label": "Top" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_only",
+      "label": "Show on mobile only",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show product image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variants",
+      "label": "Show variant selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show quantity selector",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "trigger_offset",
+      "label": "Show after scroll",
+      "min": 80,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "default": 260
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#202223"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#008060"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}
