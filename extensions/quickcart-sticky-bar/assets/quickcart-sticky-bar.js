@@ -295,9 +295,10 @@
       return true;
     }
 
-    var triggerOffset = Math.min(Number(mount.dataset.triggerOffset || 80), 80);
+    var configuredOffset = mount.dataset.triggerOffset === undefined ? 80 : Number(mount.dataset.triggerOffset);
+    var triggerOffset = Math.min(Number.isFinite(configuredOffset) ? configuredOffset : 80, 80);
     var productButton = document.querySelector('form[action*="/cart/add"] button[type="submit"], form[action*="/cart/add"] [name="add"]');
-    var hasScrolledPastOffset = window.scrollY > triggerOffset;
+    var hasScrolledPastOffset = window.scrollY >= triggerOffset;
 
     if (productButton) {
       var rect = productButton.getBoundingClientRect();
