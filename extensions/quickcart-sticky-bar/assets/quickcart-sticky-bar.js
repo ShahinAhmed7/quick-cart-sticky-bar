@@ -22,6 +22,7 @@
   var settings = window.quickCartStickyBarSettings || {};
   var selectedVariantId = String(product.selectedVariantId || product.variants[0].id);
   var visible = false;
+  var lastKnownCartCount = getInitialCartCount();
 
   function money(cents) {
     var value = (Number(cents || 0) / 100).toFixed(2);
@@ -158,6 +159,7 @@
       })
       .then(function () {
         button.textContent = settings.addedText || "Added!";
+        updateCartCount(lastKnownCartCount + count);
         return refreshCartUi();
       })
       .then(function () {
@@ -190,7 +192,8 @@
         return response.json();
       })
       .then(function (cart) {
-        updateCartCount(cart.item_count || 0);
+        lastKnownCartCount = cart.item_count || 0;
+        updateCartCount(lastKnownCartCount);
         dispatchCartEvents(cart);
       })
       .catch(function () {
@@ -199,6 +202,8 @@
   }
 
   function updateCartCount(itemCount) {
+    lastKnownCartCount = itemCount;
+
     var selectors = [
       "#cart-icon-bubble .cart-count-bubble span",
       ".cart-count-bubble span",
@@ -238,6 +243,15 @@
     });
   }
 
+  function getInitialCartCount() {
+    var countElement = document.querySelector(
+      ".quickcart-cart-count-bubble, .cart-count-bubble span, [data-cart-count], [data-header-cart-count], .cart-count"
+    );
+    var count = countElement ? Number(countElement.textContent.trim()) : 0;
+
+    return Number.isFinite(count) ? count : 0;
+  }
+
   function dispatchCartEvents(cart) {
     var detail = cart ? { cart: cart } : {};
     var events = [
@@ -261,13 +275,19 @@
     var selectors = [
       "#cart-icon-bubble",
       ".header__icon--cart",
+      "[id*='cart-icon']",
+      "[class*='cart-icon']",
+      "a[aria-label*='Cart']",
+      "button[aria-label*='Cart']",
+      "summary[aria-label*='Cart']",
+      "a[href*='/cart']",
       "a[href='/cart']",
       "a[href$='/cart']"
     ];
 
     selectors.forEach(function (selector) {
       document.querySelectorAll(selector).forEach(function (element) {
-        if (links.indexOf(element) === -1) {
+        if (!element.closest(".quickcart-sticky-bar") && links.indexOf(element) === -1) {
           links.push(element);
         }
       });
