@@ -50,7 +50,7 @@
   </script>
 
   {{ 'quickcart-sticky-bar.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'quickcart-sticky-bar.js' | asset_url }}" defer></script>
+      <script src="{{ 'quickcart-sticky-bar.js' | asset_url }}" defer></script>
 {% endif %}
 
 {% schema %}
@@ -126,11 +126,11 @@
       "type": "range",
       "id": "trigger_offset",
       "label": "Show after scroll",
-      "min": 80,
+      "min": 0,
       "max": 800,
       "step": 20,
       "unit": "px",
-      "default": 260
+      "default": 80
     },
     {
       "type": "color",
