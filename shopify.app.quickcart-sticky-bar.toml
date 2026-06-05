@@ -1,9 +1,16 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "1fc237fd6db276e316eaac7390acfc78"
-name = "QuickCart Sticky Bar"
+client_id = "4ff1ca412975db5143e69c5542bc7f08"
 application_url = "https://example.com"
 embedded = true
+name = "QuickCart Sticky Bar"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [ "https://example.com/api/auth" ]
 
 [webhooks]
 api_version = "2026-07"
@@ -20,13 +27,5 @@ api_version = "2026-07"
   uri = "/webhooks"
   compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
 
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = ""
-
-[auth]
-redirect_urls = [ "https://example.com/api/auth" ]
-
 [build]
-include_config_on_deploy = true
 automatically_update_urls_on_dev = true
