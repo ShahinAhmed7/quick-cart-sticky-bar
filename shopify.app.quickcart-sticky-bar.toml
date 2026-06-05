@@ -10,7 +10,7 @@ name = "QuickCart Sticky Bar"
 scopes = ""
 
 [auth]
-redirect_urls = [ "https://quick-cart-sticky-bar-production.up.railway.app/api/auth" ]
+redirect_urls = [ "https://quick-cart-sticky-bar-production.up.railway.app/auth/callback" ]
 
 [webhooks]
 api_version = "2026-07"
