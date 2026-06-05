@@ -10,6 +10,7 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import prisma from "./db.server";
 
 const TOML_CLIENT_ID = "4ff1ca412975db5143e69c5542bc7f08";
+const DEFAULT_APP_URL = "https://quick-cart-sticky-bar-production.up.railway.app";
 const envApiKey = process.env.SHOPIFY_API_KEY;
 
 export const SHOPIFY_API_KEY =
@@ -21,7 +22,7 @@ const shopify = shopifyApp({
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: ApiVersion.October25,
   scopes: process.env.SCOPES?.split(","),
-  appUrl: process.env.SHOPIFY_APP_URL || "",
+  appUrl: process.env.SHOPIFY_APP_URL || DEFAULT_APP_URL,
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,

@@ -1,7 +1,7 @@
 /* global globalThis:readonly */
 import { PRO_PLAN_NAME } from "./shopify.server";
 
-const DEFAULT_APP_URL = "https://example.com";
+const DEFAULT_APP_URL = "https://quick-cart-sticky-bar-production.up.railway.app";
 
 export function getAppUrl() {
   const serverProcess = globalThis.process;
